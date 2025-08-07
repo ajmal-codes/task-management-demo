@@ -121,20 +121,25 @@ export default function Home() {
   ];
 
   // State
-  const [users, setUsers] = useState<User[]>(() => {
-    const saved = localStorage.getItem("kanban-users");
-    return saved ? JSON.parse(saved) : initialUsers;
-  });
+  // const [users, setUsers] = useState<User[]>(() => {
+  //   const saved = localStorage.getItem("kanban-users");
+  //   return saved ? JSON.parse(saved) : initialUsers;
+  // });
 
-  const [columns, setColumns] = useState<Column[]>(() => {
-    const saved = localStorage.getItem("kanban-columns");
-    return saved ? JSON.parse(saved) : initialColumns;
-  });
+  // const [columns, setColumns] = useState<Column[]>(() => {
+  //   const saved = localStorage.getItem("kanban-columns");
+  //   return saved ? JSON.parse(saved) : initialColumns;
+  // });
 
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem("kanban-tasks");
-    return saved ? JSON.parse(saved) : initialTasks;
-  });
+  // const [tasks, setTasks] = useState<Task[]>(() => {
+  //   const saved = localStorage.getItem("kanban-tasks");
+  //   return saved ? JSON.parse(saved) : initialTasks;
+  // });
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [columns, setColumns] = useState<Column[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isRendered,setIsRendered] = useState<boolean>(false);
 
   const [showTaskModal, setShowTaskModal] = useState<boolean>(false);
   const [showUserModal, setShowUserModal] = useState<boolean>(false);
@@ -156,6 +161,31 @@ export default function Home() {
     useState<DeleteConfirm | null>(null);
   const [activeTab, setActiveTab] = useState<"board" | "filters">("board");
 
+useEffect(() => {
+  // Client-side check to access localStorage
+  const savedUsers = localStorage.getItem("kanban-users");
+  const savedColumns = localStorage.getItem("kanban-columns");
+  const savedTasks = localStorage.getItem("kanban-tasks");
+
+  if (savedUsers) {
+    setUsers(JSON.parse(savedUsers));
+  } else {
+    setUsers(initialUsers);  // Fallback to initial users if nothing is saved
+  }
+
+  if (savedColumns) {
+    setColumns(JSON.parse(savedColumns));
+  } else {
+    setColumns(initialColumns);  // Fallback to initial columns if nothing is saved
+  }
+
+  if (savedTasks) {
+    setTasks(JSON.parse(savedTasks));
+  } else {
+    setTasks(initialTasks);  // Fallback to initial tasks if nothing is saved
+  }
+  setIsRendered(true)
+}, []);
   // Save to localStorage
   useEffect(() => {
     localStorage.setItem("kanban-tasks", JSON.stringify(tasks));
@@ -374,6 +404,9 @@ export default function Home() {
     setEditingTask(null);
   };
 
+  if(!isRendered) {
+    return null;
+  }
   return (
     <div className="min-h-screen ">
       <header className="bg-[#1e1e1e] shadow-sm ">
